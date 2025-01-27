@@ -1,0 +1,24 @@
+{
+    "name": "youtube-downloader",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+        "start": "node /app/bin/serve",
+        "dev": "nodemon --quiet --legacy-watch -c /app/nodemon.json"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "description": "",
+    "dependencies": {
+        "cookie-parser": "^1.4.7",
+        "ejs": "^3.1.10",
+        "express": "^4.21.2",
+        "http-errors": "^2.0.0",
+        "ytdl-core": "^4.11.5"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    }
+}

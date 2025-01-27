@@ -1,0 +1,18 @@
+{
+    "watch": [
+        "bin",
+        "dist",
+        "public",
+        "views",
+        "src"
+    ],
+    "ext": "js,json",
+    "ignore": [
+        "node_modules",
+        "logs"
+    ],
+    "exec": "node /app/bin/serve",
+    "env": {
+        "CHOKIDAR_USEPOLLING": "true"
+    }
+}
