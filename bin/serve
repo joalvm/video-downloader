@@ -1,69 +1,85 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-var app = require('../app');
-var debug = require('debug')('node-ejs:server');
-var http = require('http');
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
+import winston from 'winston';
+import { tmpdir } from 'os';
+import app from '../app.js';
 
-/**
- * Get port from environment and store in Express.
- */
-var port = normalizePort(process.env.APP_PORT || '3000');
+// Configuración del puerto
+const DEFAULT_PORT = 3000;
+const port = normalizePort(process.env.APP_PORT || DEFAULT_PORT);
+
+if (!process.env.NODE_ENV) {
+    console.warn('NODE_ENV no está definido. Usando "development".');
+    process.env.NODE_ENV = 'development';
+}
+
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-server.listen(port, () => {
-    console.log(`listening in port ${port}`);
+// Logger
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({filename: 'combined.log', dirname: tmpdir() + '/logs'}),
+    ],
 });
+
+// Crear servidor HTTP/HTTPS
+let server;
+if (process.env.NODE_ENV === 'production') {
+    const options = {
+        key: fs.readFileSync('/path/to/key.pem'),
+        cert: fs.readFileSync('/path/to/cert.pem'),
+    };
+    server = https.createServer(options, app);
+    logger.info('Servidor HTTPS iniciado');
+} else {
+    server = http.createServer(app);
+    logger.info('Servidor HTTP iniciado');
+}
+
+// Escuchar en el puerto
+server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
+// Captura de señales para cerrar el servidor
+process.on('SIGINT', () => {
+    logger.info('Cerrando servidor...');
+    server.close(() => {
+        logger.info('Servidor cerrado');
+        process.exit(0);
+    });
+});
+
+process.on('SIGTERM', () => {
+    logger.info('Servidor terminado');
+    server.close(() => process.exit(0));
+});
+
+// Normalizar puerto
 function normalizePort(val) {
-    var port = parseInt(val, 10);
-
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
-
-    if (port >= 0) {
-        // port number
-        return port;
-    }
-
+    const port = parseInt(val, 10);
+    if (isNaN(port)) return val;
+    if (port >= 0) return port;
     return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
+// Manejo de errores
 function onError(error) {
-    if (error.syscall !== 'listen') {
-        throw error;
-    }
-
-    var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
-
-    // handle specific listen errors with friendly messages
+    if (error.syscall !== 'listen') throw error;
+    const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            logger.error(`${bind} requiere privilegios elevados.`);
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            logger.error(`${bind} está en uso.`);
             process.exit(1);
             break;
         default:
@@ -71,11 +87,9 @@ function onError(error) {
     }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
+// Evento listening
 function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    const addr = server.address();
+    const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    logger.info(`Listening on ${bind}`);
 }

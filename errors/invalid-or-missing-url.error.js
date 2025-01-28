@@ -1,4 +1,4 @@
-const httpError = require('http-errors');
+import httpError from 'http-errors';
 
 class InvalidOrMissingUrlError extends httpError.NotAcceptable {
     name = 'InvalidOrMissingError';
@@ -8,4 +8,4 @@ class InvalidOrMissingUrlError extends httpError.NotAcceptable {
     }
 }
 
-module.exports = InvalidOrMissingUrlError;
+export default InvalidOrMissingUrlError;

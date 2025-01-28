@@ -11,6 +11,21 @@ function humanDuration(duration) {
     return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${seconds}s`;
 }
 
+function errorAlert(message) {
+    const alert = document.createElement('div');
+    const icon = lucide.createElement(lucide.AlertCircle);
+    const text = document.createElement('p');
+
+    alert.classList.add('flex', 'items-center', 'bg-red-100', 'border', 'border-red-400', 'text-red-700', 'px-4', 'py-3', 'rounded', 'relative', 'mb-4');
+    icon.setAttribute('class', 'h-5 w-5 mr-2');
+    text.textContent = message;
+
+    alert.appendChild(icon);
+    alert.appendChild(text);
+
+    return alert;
+}
+
 async function handleDownload() {
     const downloadBtn = this;
     const url = urlInput.value.trim();
@@ -21,7 +36,8 @@ async function handleDownload() {
     icon.setAttribute('class', 'animate-spin h-5 w-5');
 
     downloadBtn.innerHTML = ``;
-    downloadBtn.appendChild(icon);
+    downloadBtn.textContent = 'Descargando...';
+    downloadBtn.prepend(icon);
     downloadBtn.disabled = true;
 
     try {
@@ -59,7 +75,8 @@ async function handleDownload() {
         downloadIcon.setAttribute('class', 'h-5 w-5 mr-2');
 
         downloadBtn.innerHTML = ``;
-        downloadBtn.appendChild(downloadIcon);
+        downloadBtn.textContent = 'Descargar';
+        downloadBtn.prepend(downloadIcon);
         downloadBtn.disabled = false;
     }
 }
@@ -76,7 +93,7 @@ function makeVideoInfo(data) {
     const downloadBtn = document.createElement('button');
     const downloadIcon = lucide.createElement(lucide.Download);
 
-    container.classList.add('flex', 'flex-col', 'md:flex-row', 'gap-4', 'my-2');
+    container.classList.add('flex', 'flex-col', 'md:flex-row', 'gap-4', 'my-2', 'p-4', 'bg-white', 'rounded-md', 'shadow-md');
 
     containerThumbnail.classList.add(
         'md:w-2/6',
@@ -163,21 +180,30 @@ searchBtn.addEventListener('click', async (e) => {
     pasteBtn.disabled = true;
     urlInput.disabled = true;
 
-    videoInfo.classList.innerHTML = ``;
+    videoInfo.innerHTML = ``;
 
     try {
         const response = await fetch(`/info?url=${encodeURIComponent(url)}`);
         const data = await response.json();
 
-        if (data.error) {
-            alert(data.error);
+        if (response.status >= 400) {
+            videoInfo.append(errorAlert(data.message || 'Error al obtener la información del video'));
+            setTimeout(() => {
+                videoInfo.innerHTML = ``;
+                urlInput.value = ``;
+                urlInput.focus();
+            }, 10000);
             return;
         }
 
         videoInfo.appendChild(makeVideoInfo(data));
     } catch (error) {
-        console.error('Error fetching video info:', error);
-        alert('Error al obtener la información del video');
+        videoInfo.append(errorAlert(error.message || 'Error al obtener la información del video'));
+        setTimeout(() => {
+            videoInfo.innerHTML = ``;
+            urlInput.value = ``;
+            urlInput.focus();
+        }, 10000);
     } finally {
         const icon = lucide.createElement(lucide.Search);
 

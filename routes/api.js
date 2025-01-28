@@ -1,10 +1,10 @@
-const {Router} = require('express');
-const {execSync} = require('child_process');
-const {basename, join} = require('path');
-const {Readable} = require('node:stream');
-const {tmpdir} = require('node:os');
+import {Router} from 'express';
+import {basename, join} from 'path';
+import {Readable} from 'node:stream';
+import {tmpdir} from 'node:os';
 
-const InvalidOrMissingUrlError = require('../errors/invalid-or-missing-url.error');
+import InvalidOrMissingUrlError from '../errors/invalid-or-missing-url.error.js';
+import { exec } from 'node:child_process';
 
 const OUTPUT_DIR = join(tmpdir(), 'downloads');
 
@@ -42,14 +42,26 @@ routes.get('/info', (req, res) => {
         throw new InvalidOrMissingUrlError();
     }
 
-    try {
-        const result = execSync(`yt-dlp --print-json ${url}`);
+    exec(`yt-dlp --print-json --skip-download ${url}`, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+        if (error) {
+            console.error('Error getting video info:', stderr);
+            res.status(500).json({message: error.message || 'Failed to get video info'});
 
-        res.json(JSON.parse(result.toString().trim()));
-    } catch (error) {
-        console.error('Error getting video info:', error);
-        res.status(500).json({message: 'Failed to get video info'});
-    }
+            return;
+        }
+
+        console.error('out: ', stdout);
+
+        const content = JSON.parse(stdout?.toString()?.trim() || '');
+
+        if (!content) {
+            res.status(500).json({message: 'Failed to get video info'});
+
+            return;
+        }
+
+        res.status(200).json(content);
+    });
 });
 
 // Ruta para descargar un video
@@ -60,22 +72,43 @@ routes.post('/download', (req, res) => {
         throw new InvalidOrMissingUrlError();
     }
 
-    try {
-        const result = execSync(
-            `yt-dlp -f bestvideo*+bestaudio/best -P "${OUTPUT_DIR}" -o "%(id)s.%(ext)s" --print after_move:filepath ${url}`,
-        );
-
-        const filepath = result.toString().trim();
-
-        res.download(filepath, basename(filepath), (err) => {
-            if (err) {
-                console.error('Error sending file:', err);
-            }
+    return download(url)
+        .then((filepath) => {
+            res.download(filepath, basename(filepath), (err) => {
+                if (err) {
+                    console.error('Error sending file:', err);
+                }
+            });
+        })
+        .catch(() => {
+            res.status(500).json({message: 'Failed to download video'});
         });
-    } catch (error) {
-        console.error('Error downloading video:', error);
-        res.status(500).json({message: 'Failed to download video'});
-    }
 });
 
-module.exports = routes;
+async function download(url) {
+    return new Promise((resolve, reject) => {
+        const command = [
+            'yt-dlp',
+            '-f', 'bestvideo*+bestaudio/best',
+            '-P', `"${OUTPUT_DIR}"`,
+            '-o', '"%(id)s.%(ext)s"',
+            '--add-metadata',
+            '--embed-thumbnail',
+            '--print', 'after_move:filepath',
+            url,
+        ].join(' ');
+
+        exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error downloading video:', stderr);
+                reject(error);
+
+                return;
+            }
+
+            resolve(stdout.toString().trim());
+        });
+    });
+}
+
+export default routes;

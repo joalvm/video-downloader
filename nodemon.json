@@ -1,10 +1,12 @@
 {
     "watch": [
-        "bin",
-        "dist",
-        "public",
-        "views",
-        "src"
+        "bin/",
+        "errors/",
+        "public/",
+        "routes/",
+        "views/",
+        "app.js",
+        "package.json"
     ],
     "ext": "js,json",
     "ignore": [
