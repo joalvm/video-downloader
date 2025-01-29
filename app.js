@@ -7,16 +7,52 @@ import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
 import {normalize} from 'path';
+import {randomBytes} from 'crypto';
 import rateLimit from 'express-rate-limit';
-import apiRoutes from './routes/api.js';
-import viewsRoutes from './routes/views.js';
+import apiRoutes from './routes/api.route.js';
+import viewsRoutes from './routes/views.route.js';
 
 dotenvExpand.expand(dotenv.config());
 
 const app = express();
 
+// Middleware para generar nonce en cada request
+app.use((_, res, next) => {
+    res.locals.nonce = randomBytes(16).toString("base64"); // Nonce único por solicitud
+
+    next();
+});
+
 // Seguridad
-app.use(helmet({contentSecurityPolicy: false}));
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                "'self'",
+                (_, res) => `'nonce-${res.locals.nonce}'`,
+                "https://cdn.tailwindcss.com",
+                "https://unpkg.com/lucide@latest"
+            ],
+            scriptSrcElem: [
+                "'self'",
+                (_, res) => `'nonce-${res.locals.nonce}'`,
+                "https://cdn.tailwindcss.com",
+                "https://unpkg.com/lucide@latest"
+            ],
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'", // Necesario para Tailwind
+                "https://cdn.tailwindcss.com"
+            ],
+            imgSrc: ["'self'", "data:", "https://unpkg.com/lucide@latest"],
+            fontSrc: ["'self'", "data:"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: process.env.NODE_ENV === "production" ? [] : null,
+        },
+    },
+}));
+
 app.use(
     cors({
         origin: '*',
@@ -55,7 +91,7 @@ app.use((_, __, next) => {
     next(createHttpError(404));
 });
 
-app.use((err, _, res) => {
+app.use((err, _, res, next) => {
     res.status(err.status || 500).json({message: err.message});
 });
 

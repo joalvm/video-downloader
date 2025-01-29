@@ -6,6 +6,7 @@ import InvalidOrMissingUrlError from '../errors/invalid-or-missing-url.error.js'
 
 const OUTPUT_DIR = join(tmpdir(), 'downloads');
 
+
 async function downloadHandler(req, res) {
     const {url} = req.body;
 
@@ -26,10 +27,17 @@ async function downloadHandler(req, res) {
         });
 }
 
+/**
+ * Descarga un video desde la URL proporcionada usando una herramienta de línea de comandos.
+ *
+ * @param {string} url - La URL del video a descargar.
+ * @returns {Promise<string>} Una promesa que se resuelve con la ruta del archivo del video descargado.
+ * @throws {Error} Si el proceso de descarga falla.
+ */
 async function download(url) {
     return new Promise((resolve, reject) => {
         const command = [
-            'yt-dlp',
+            '   ',
             '-f', 'bestvideo*+bestaudio/best',
             '-P', `"${OUTPUT_DIR}"`,
             '-o', '"%(id)s.%(ext)s"',
