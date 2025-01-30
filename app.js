@@ -4,6 +4,8 @@ import express from 'express';
 import createHttpError from 'http-errors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
+import { express as useragentExpress } from 'express-useragent';
+import methodOverride from 'method-override';
 import helmet from 'helmet';
 import cors from 'cors';
 import {normalize} from 'path';
@@ -54,48 +56,45 @@ app.use(helmet({
     },
 }));
 
-app.use(
-    cors({
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        credentials: true,
-    }),
-);
-
-// Middleware para mejorar rendimiento
-app.use(compression());
-app.use(
-    rateLimit({
-        windowMs: 1 * 60 * 1000, // 1 minuto
-        max: 100, // Limita 100 solicitudes por IP
-    }),
-);
-
-// Configuración
-app.set('views', normalize('./views'));
-app.set('view engine', 'ejs');
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+}));
 
 // Parseadores
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(process.env.APP_KEY));
+app.use(methodOverride());
+app.use(useragentExpress());
+
+// Middleware para mejorar rendimiento
+
+// Comprime las respuestas
+app.use(compression());
+// Limita la cantidad de peticiones a 100 por minuto.
+app.use(rateLimit({ windowMs: 1 * 60 * 1000, max: 100}));
+// Logger
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+
+// Configuración
+app.set('views', normalize('./views'));
+app.set('view engine', 'ejs');
 
 // Archivos estáticos
 app.use(express.static(normalize('./public')));
-
-// logger
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Rutas
 app.use(viewsRoutes);
 app.use(apiRoutes);
 
-// Manejo de errores
+// middleware de manejo de errores
 app.use((_, __, next) => {
     next(createHttpError(404));
 });
 
-app.use((err, _, res, next) => {
+app.use((err, _, res, __) => {
     res.status(err.status || 500).json({message: err.message});
 });
 

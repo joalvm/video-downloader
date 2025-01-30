@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Instala Nginx
-RUN apk add --no-cache nginx yt-dlp ffmpeg
+RUN apk add --no-cache nginx yt-dlp ffmpeg jq
 
 # Crea los directorios necesarios
 WORKDIR /app
@@ -12,9 +12,11 @@ COPY package*.json ./
 COPY nodemon.json ./
 COPY app.js ./
 COPY bin/ ./bin
+COPY errors/ ./errors
+COPY handlers/ ./handlers
 COPY public/ ./public
-COPY views/ ./views
 COPY routes/ ./routes
+COPY views/ ./views
 
 # Instala las dependencias de Node.js
 RUN npm install --only=dev --prefix /app

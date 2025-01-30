@@ -5,6 +5,7 @@
         "public/",
         "routes/",
         "views/",
+        "handlers/",
         "app.js",
         "package.json"
     ],

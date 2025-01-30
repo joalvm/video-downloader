@@ -10,27 +10,23 @@ import InvalidOrMissingUrlError from '../errors/invalid-or-missing-url.error.js'
  * @param {import('express').Response<void>} res
  */
 async function proxyHandler(req, res) {
-    try {
-        const {url} = req.query;
+    const {url} = req.query;
 
-        if (!url) {
-            throw new InvalidOrMissingUrlError();
-        }
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        if (!response.body) {
-            throw new Error('Response body is null');
-        }
-
-        Readable.fromWeb(response.body).pipe(res);
-    } catch (error) {
-        res.status(500).send('Error al procesar la imagen');
+    if (!url) {
+        throw new InvalidOrMissingUrlError();
     }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    if (!response.body) {
+        throw new Error('Response body is null');
+    }
+
+    Readable.fromWeb(response.body).pipe(res);
 }
 
 export default proxyHandler;

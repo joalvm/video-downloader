@@ -1,6 +1,7 @@
 import {exec} from 'child_process';
 import InvalidOrMissingUrlError from "../errors/invalid-or-missing-url.error.js";
-import createHttpError from 'http-errors';
+import EmptyInfoResponseError from '../errors/empty-info-response.error.js';
+import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
 
 /**
  *
@@ -20,33 +21,50 @@ async function infoHanlder(req, res) {
         throw new InvalidOrMissingUrlError();
     }
 
-    return info(url)
-        .then((info) => {
-            res.json(info)
-        })
-        .catch(() => {
-            res.status(406).json({message: 'Failed to get video info'});
-        });
+    const content = await info(url);
+
+    return res.json(content);
 }
 
+/**
+ * Get video info from the provided URL.
+ *
+ * @param {string} url
+ * @returns {Promise<{title: string, thumbnail: string, duration: number, formats: object[]}>}
+ */
 async function info(url) {
     return new Promise((resolve, reject) => {
-        exec(`yt-dlp --print-json --skip-download ${url}`, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+        const command = [
+            'yt-dlp',
+            '--print', `'{
+                "title": %(title)j,
+                "thumbnail": %(thumbnail)j,
+                "duration": %(duration)j,
+                "description": %(description)j,
+                "formats": %(formats)j
+            }'`,
+            '--skip-download',
+            url,
+        ].join(' ');
+
+        exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
             if (error) {
                 reject(error);
 
                 return;
             }
 
-            const content = JSON.parse(stdout?.toString()?.trim() || '');
-
-            if (!content) {
-                reject(new Error('Failed to get video info'));
+            if (!stdout?.toString()?.trim()) {
+                reject(new EmptyInfoResponseError());
 
                 return;
             }
 
-            resolve(content);
+            try {
+                resolve(JSON.parse(stdout?.toString()?.trim() || ''));
+            } catch (error) {
+                reject(new InvalidParseInfoError());
+            }
         });
     });
 }
