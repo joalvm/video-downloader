@@ -1,29 +1,53 @@
 import {exec} from 'child_process';
 import InvalidOrMissingUrlError from "../errors/invalid-or-missing-url.error.js";
+import createHttpError from 'http-errors';
 
-function infoHanlder(req, res) {
+/**
+ *
+ * Handler to get video info from a provided URL.
+ *
+ * @async
+ *
+ * @param {import('express').Request<{}, {}, {}, {url?: string}>} req
+ * @param {import('express').Response<void>} res
+ *
+ * @returns {void}
+ */
+async function infoHanlder(req, res) {
     const {url} = req.query;
 
     if (!url) {
         throw new InvalidOrMissingUrlError();
     }
 
-    exec(`yt-dlp --print-json --skip-download ${url}`, {encoding: 'utf-8'}, (error, stdout, stderr) => {
-        if (error) {
-            res.status(500).json({message: error.message || 'Failed to get video info'});
+    return info(url)
+        .then((info) => {
+            res.json(info)
+        })
+        .catch(() => {
+            res.status(406).json({message: 'Failed to get video info'});
+        });
+}
 
-            return;
-        }
+async function info(url) {
+    return new Promise((resolve, reject) => {
+        exec(`yt-dlp --print-json --skip-download ${url}`, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
 
-        const content = JSON.parse(stdout?.toString()?.trim() || '');
+                return;
+            }
 
-        if (!content) {
-            res.status(500).json({message: 'Failed to get video info'});
+            const content = JSON.parse(stdout?.toString()?.trim() || '');
 
-            return;
-        }
+            if (!content) {
+                reject(new Error('Failed to get video info'));
 
-        res.status(200).json(content);
+                return;
+            }
+
+            resolve(content);
+        });
     });
 }
 

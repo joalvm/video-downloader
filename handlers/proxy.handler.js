@@ -1,6 +1,14 @@
 import {Readable} from 'node:stream';
 import InvalidOrMissingUrlError from '../errors/invalid-or-missing-url.error.js';
 
+/**
+ * Manejador proxy para obtener y transmitir recursos externos.
+ *
+ * @async
+ *
+ * @param {import('express').Request<{}, {}, {}, {url?: string}>} req
+ * @param {import('express').Response<void>} res
+ */
 async function proxyHandler(req, res) {
     try {
         const {url} = req.query;

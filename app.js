@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import {normalize} from 'path';
 import {randomBytes} from 'crypto';
+import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import apiRoutes from './routes/api.route.js';
 import viewsRoutes from './routes/views.route.js';
@@ -81,6 +82,9 @@ app.use(cookieParser(process.env.APP_KEY));
 
 // Archivos estáticos
 app.use(express.static(normalize('./public')));
+
+// logger
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Rutas
 app.use(viewsRoutes);
