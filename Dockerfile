@@ -11,9 +11,11 @@ WORKDIR /app
 COPY package*.json ./
 COPY nodemon.json ./
 COPY app.js ./
+COPY .env ./
 COPY bin/ ./bin
 COPY errors/ ./errors
 COPY handlers/ ./handlers
+COPY middlewares/ ./middlewares
 COPY public/ ./public
 COPY routes/ ./routes
 COPY views/ ./views
