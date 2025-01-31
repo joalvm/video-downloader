@@ -36,15 +36,10 @@ async function info(url) {
     return new Promise((resolve, reject) => {
         const command = [
             'yt-dlp',
-            '--print', `'{
-                "title": %(title)j,
-                "thumbnail": %(thumbnail)j,
-                "duration": %(duration)j,
-                "description": %(description)j,
-                "formats": %(formats)j
-            }'`,
+            '--ignore-errors',
+            '--print-json',
             '--skip-download',
-            url,
+            `"${url}"`,
         ].join(' ');
 
         exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
@@ -54,14 +49,32 @@ async function info(url) {
                 return;
             }
 
-            if (!stdout?.toString()?.trim()) {
+            const content = stdout?.toString()?.trim();
+
+            if (!content) {
                 reject(new EmptyInfoResponseError());
 
                 return;
             }
 
             try {
-                resolve(JSON.parse(stdout?.toString()?.trim() || ''));
+                const data = JSON.parse(content);
+
+                resolve({
+                    id: data?.id,
+                    artist: data?.artist,
+                    title: data?.title,
+                    description: data.description,
+                    thumbnail: data.thumbnail || data.url,
+                    duration: data?.duration,
+                    extractor: data?.extractor,
+                    extractor_key: data?.extractor_key,
+                    filesize: data?.filesize,
+                    ext: data?.ext,
+                    width: data?.width,
+                    height: data?.height,
+                    formats: data?.formats || [],
+                });
             } catch (error) {
                 reject(new InvalidParseInfoError());
             }

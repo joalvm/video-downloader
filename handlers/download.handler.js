@@ -54,7 +54,7 @@ async function download(url) {
             '--add-metadata',
             '--embed-thumbnail',
             '--print', 'after_move:filepath',
-            url,
+            `"${url}"`,
         ].join(' ');
 
         exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
