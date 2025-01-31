@@ -15,13 +15,13 @@ npm install
 ### Construir la imagen docker
 
 ```shell
-docker build -t youtube-downloader .
+docker build -t video-downloader .
 ```
 
 ### Iniciar el contenedor
 
 ```shell
-docker run -it --rm -p 83:80 -v .:/app youtube-downloader
+docker run -it --rm -p 83:80 -v .:/app video-downloader
 ```
 
 Ahora puedes probarlo usando la ruta `localhost:83`
