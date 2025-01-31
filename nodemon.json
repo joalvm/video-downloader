@@ -2,10 +2,12 @@
     "watch": [
         "bin/",
         "errors/",
+        "handlers/",
+        "middlewares/",
         "public/",
         "routes/",
         "views/",
-        "handlers/",
+        ".env",
         "app.js",
         "package.json"
     ],

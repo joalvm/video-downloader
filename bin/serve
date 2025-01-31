@@ -21,25 +21,30 @@ app.set('port', port);
 // Logger
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: winston.format.combine(
+        winston.format.splat(),
+        winston.format.simple(),
+    ),
     transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({filename: 'combined.log', dirname: tmpdir() + '/logs'}),
+        new winston.transports.Console({level: 'info'}),
+        new winston.transports.File({
+            level: 'error',
+            filename: 'combined.log',
+            dirname: tmpdir() + '/logs'
+        }),
     ],
 });
 
 // Crear servidor HTTP/HTTPS
 let server;
+
 if (process.env.NODE_ENV === 'production') {
-    const options = {
+    server = https.createServer({
         key: fs.readFileSync('/path/to/key.pem'),
         cert: fs.readFileSync('/path/to/cert.pem'),
-    };
-    server = https.createServer(options, app);
-    logger.info('Servidor HTTPS iniciado');
+    }, app);
 } else {
     server = http.createServer(app);
-    logger.info('Servidor HTTP iniciado');
 }
 
 // Escuchar en el puerto
@@ -50,38 +55,50 @@ server.on('listening', onListening);
 // Captura de señales para cerrar el servidor
 process.on('SIGINT', () => {
     logger.info('Cerrando servidor...');
+
     server.close(() => {
         logger.info('Servidor cerrado');
+
         process.exit(0);
     });
 });
 
 process.on('SIGTERM', () => {
     logger.info('Servidor terminado');
+
     server.close(() => process.exit(0));
 });
 
 // Normalizar puerto
 function normalizePort(val) {
     const port = parseInt(val, 10);
-    if (isNaN(port)) return val;
-    if (port >= 0) return port;
+
+    if (isNaN(port)) {
+        return val;
+    }
+
+    if (port >= 0) {
+        return port;
+    }
+
     return false;
 }
 
 // Manejo de errores
 function onError(error) {
-    if (error.syscall !== 'listen') throw error;
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
     const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
     switch (error.code) {
         case 'EACCES':
             logger.error(`${bind} requiere privilegios elevados.`);
             process.exit(1);
-            break;
         case 'EADDRINUSE':
             logger.error(`${bind} está en uso.`);
             process.exit(1);
-            break;
         default:
             throw error;
     }
@@ -90,6 +107,7 @@ function onError(error) {
 // Evento listening
 function onListening() {
     const addr = server.address();
-    const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+
     logger.info(`Listening on ${bind}`);
 }
