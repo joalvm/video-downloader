@@ -62,7 +62,9 @@ function securityMiddleware(app) {
     app.use(
         rateLimit({
             windowMs: 1 * 60 * 1000,
-            max: 100
+            max: 100,
+            validate: { trustProxy: true },
+            keyGenerator: (req) => req.ip,
         })
     );
 }
