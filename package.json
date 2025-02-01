@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "app.js",
     "scripts": {
-        "start": "node /app/bin/serve",
+        "start": "NODE_ENV=production node /app/bin/www",
         "dev": "nodemon --quiet --legacy-watch -c /app/nodemon.json"
     },
     "keywords": [],

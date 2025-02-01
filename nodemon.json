@@ -16,7 +16,7 @@
         "node_modules",
         "logs"
     ],
-    "exec": "node /app/bin/serve",
+    "exec": "NODE_ENV=development node /app/bin/www",
     "env": {
         "CHOKIDAR_USEPOLLING": "true"
     }

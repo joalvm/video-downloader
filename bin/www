@@ -6,6 +6,7 @@ import fs from 'fs';
 import winston from 'winston';
 import { tmpdir } from 'os';
 import app from '../app.js';
+import normalizePort from '../utils/normalize-port.util.js';
 
 // Configuración del puerto
 const DEFAULT_PORT = 3000;
@@ -52,7 +53,7 @@ server.on('error', function (error) {
         throw error;
     }
 
-    const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+    const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
     switch (error.code) {
         case 'EACCES':
@@ -89,18 +90,3 @@ process.on('SIGTERM', () => {
 
     server.close(() => process.exit(0));
 });
-
-// Normalizar puerto
-function normalizePort(val) {
-    const port = parseInt(val, 10);
-
-    if (isNaN(port)) {
-        return val;
-    }
-
-    if (port >= 0) {
-        return port;
-    }
-
-    return false;
-}
