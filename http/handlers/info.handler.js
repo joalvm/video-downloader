@@ -1,7 +1,7 @@
 import {exec} from 'child_process';
-import InvalidOrMissingUrlError from "../errors/invalid-or-missing-url.error.js";
-import EmptyInfoResponseError from '../errors/empty-info-response.error.js';
-import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
+import InvalidOrMissingUrlError from "../../errors/invalid-or-missing-url.error.js";
+import EmptyInfoResponseError from '../../errors/empty-info-response.error.js';
+import InvalidParseInfoError from '../../errors/invalid-parse-info.error.js';
 
 /**
  *

@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import proxyHandle from '../handlers/proxy.handler.js';
-import infoHanlder from '../handlers/info.handler.js';
-import downloadHandler from '../handlers/download.handler.js';
+import proxyHandle from '../http/handlers/proxy.handler.js';
+import infoHanlder from '../http/handlers/info.handler.js';
+import downloadHandler from '../http/handlers/download.handler.js';
 
 const routes = Router();
 

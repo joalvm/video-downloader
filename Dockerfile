@@ -14,8 +14,7 @@ COPY app.js ./
 COPY .env ./
 COPY bin/ ./bin
 COPY errors/ ./errors
-COPY handlers/ ./handlers
-COPY middlewares/ ./middlewares
+COPY http/ ./http
 COPY public/ ./public
 COPY routes/ ./routes
 COPY views/ ./views

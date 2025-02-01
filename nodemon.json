@@ -2,8 +2,7 @@
     "watch": [
         "bin/",
         "errors/",
-        "handlers/",
-        "middlewares/",
+        "http/",
         "public/",
         "routes/",
         "views/",

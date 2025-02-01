@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import homeHandler from '../handlers/home.handler.js';
+import homeHandler from '../http/handlers/home.handler.js';
 
 const routes = Router();
 

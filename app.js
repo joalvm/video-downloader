@@ -2,12 +2,12 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import express from 'express';
 import {normalize} from 'path';
+import securityMiddleware from './http/middlewares/security.middleware.js';
+import parsersMiddleware from './http/middlewares/parsers.middleware.js';
+import performanceMiddleware from './http/middlewares/performance.middleware.js';
+import errorHandlerMiddleware from './http/middlewares/error-handler.middleware.js';
 import apiRoutes from './routes/api.route.js';
 import viewsRoutes from './routes/views.route.js';
-import securityMiddleware from './middlewares/security.middleware.js';
-import parsersMiddleware from './middlewares/parsers.middleware.js';
-import performanceMiddleware from './middlewares/performance.middleware.js';
-import errorHandlerMiddleware from './middlewares/error-handler.middleware.js';
 
 dotenvExpand.expand(dotenv.config());
 

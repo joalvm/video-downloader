@@ -2,7 +2,7 @@ import {basename} from 'path';
 import {join} from 'path';
 import {tmpdir} from 'node:os';
 import { exec } from 'node:child_process';
-import InvalidOrMissingUrlError from '../errors/invalid-or-missing-url.error.js';
+import InvalidOrMissingUrlError from '../../errors/invalid-or-missing-url.error.js';
 
 const OUTPUT_DIR = join(tmpdir(), 'downloads');
 
