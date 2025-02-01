@@ -17,6 +17,7 @@ COPY errors/ ./errors
 COPY http/ ./http
 COPY public/ ./public
 COPY routes/ ./routes
+COPY utils/ ./utils
 COPY views/ ./views
 
 # Instala las dependencias de Node.js

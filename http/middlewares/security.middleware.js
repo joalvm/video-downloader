@@ -20,6 +20,7 @@ import { randomBytes } from 'crypto';
 function securityMiddleware(app) {
     app.use((_, res, next) => {
         res.locals.nonce = randomBytes(16).toString("base64");
+
         next();
     });
 

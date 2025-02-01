@@ -71,8 +71,7 @@ server.on('listening', function () {
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
     logger.info(`Listening on ${bind}`);
-}
-);
+});
 
 // Captura de señales para cerrar el servidor
 process.on('SIGINT', () => {

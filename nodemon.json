@@ -6,6 +6,7 @@
         "public/",
         "routes/",
         "views/",
+        "utils/",
         ".env",
         "app.js",
         "package.json"
