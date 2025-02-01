@@ -4,8 +4,6 @@ import {tmpdir} from 'node:os';
 import {download} from '../../utils/yt-dlp.util.js';
 import InvalidOrMissingUrlError from '../../errors/invalid-or-missing-url.error.js';
 
-const OUTPUT_DIR = join(tmpdir(), 'downloads');
-
 /**
  *
  * Manejador para descargar un video desde una URL proporcionada.
@@ -24,7 +22,7 @@ async function downloadHandler(req, res) {
         throw new InvalidOrMissingUrlError();
     }
 
-    const filepath = await download(url, OUTPUT_DIR);
+    const filepath = await download(url, join(tmpdir(), 'downloads'));
 
     res.download(filepath, basename(filepath), (err) => {
         if (err) {
