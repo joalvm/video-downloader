@@ -13,21 +13,17 @@ dotenvExpand.expand(dotenv.config());
 
 const app = express();
 
-// Configuración de proxy (nueva línea)
 app.set('trust proxy', true);
 
 securityMiddleware(app);
 parsersMiddleware(app);
 performanceMiddleware(app);
 
-// Configuración de vistas
 app.set('views', normalize('./views'));
 app.set('view engine', 'ejs');
 
-// Archivos estáticos
 app.use(express.static(normalize('./public')));
 
-// Rutas
 app.use(viewsRoutes);
 app.use(apiRoutes);
 
