@@ -1,6 +1,6 @@
-import {basename} from 'path';
-import {join} from 'path';
+import {basename, join} from 'node:path';
 import {tmpdir} from 'node:os';
+
 import {download} from '../../utils/yt-dlp.util.js';
 import InvalidOrMissingUrlError from '../../errors/invalid-or-missing-url.error.js';
 

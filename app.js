@@ -1,7 +1,9 @@
+import {normalize} from 'node:path';
+
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import express from 'express';
-import {normalize} from 'path';
+
 import securityMiddleware from './http/middlewares/security.middleware.js';
 import parsersMiddleware from './http/middlewares/parsers.middleware.js';
 import performanceMiddleware from './http/middlewares/performance.middleware.js';

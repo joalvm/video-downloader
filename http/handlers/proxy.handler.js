@@ -1,4 +1,5 @@
 import {Readable} from 'node:stream';
+
 import InvalidOrMissingUrlError from '../../errors/invalid-or-missing-url.error.js';
 
 /**

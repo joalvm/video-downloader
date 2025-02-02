@@ -1,7 +1,8 @@
+import { randomBytes } from 'crypto';
+
 import helmet from 'helmet';
 import cors from 'cors';
-import rateLimit from 'express-rate-limit';
-import { randomBytes } from 'crypto';
+import {rateLimit} from 'express-rate-limit';
 
 /**
  * Middleware de seguridad para la aplicación.

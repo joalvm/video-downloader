@@ -1,4 +1,5 @@
-import { exec } from "node:child_process";
+import { execFile } from "node:child_process";
+
 import EmptyInfoResponseError from '../errors/empty-info-response.error.js';
 import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
 
@@ -14,20 +15,19 @@ import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
  *
  * @throws {Error} Si el proceso de descarga falla.
  */
-export async function download(url, outputDir) {
+async function download(url, outputDir) {
     return new Promise((resolve, reject) => {
         const command = [
-            'yt-dlp',
             '-f', 'bestvideo*+bestaudio/best',
-            '-P', `"${outputDir}"`,
-            '-o', '"%(id)s.%(ext)s"',
+            '-P', outputDir,
+            '-o', '%(id)s.%(ext)s',
             '--add-metadata',
             '--embed-thumbnail',
             '--print', 'after_move:filepath',
-            `"${url}"`,
-        ].join(' ');
+            url,
+        ];
 
-        exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+        execFile('yt-dlp', command, {encoding: 'utf-8'}, (error, stdout) => {
             if (error) {
                 reject(error);
 
@@ -62,17 +62,11 @@ export async function download(url, outputDir) {
  *  formats: object[]
  * }>}
  */
-export async function info(url) {
+async function info(url) {
     return new Promise((resolve, reject) => {
-        const command = [
-            'yt-dlp',
-            '--ignore-errors',
-            '--print-json',
-            '--skip-download',
-            `"${url}"`,
-        ].join(' ');
+        const command = ['--ignore-errors', '--print-json', '--skip-download', url];
 
-        exec(command, {encoding: 'utf-8'}, (error, stdout, stderr) => {
+        execFile('yt-dlp', command, {encoding: 'utf-8'}, (error, stdout) => {
             if (error) {
                 reject(error);
 
@@ -105,9 +99,11 @@ export async function info(url) {
                     height: data?.height,
                     formats: data?.formats || [],
                 });
-            } catch (error) {
+            } catch {
                 reject(new InvalidParseInfoError());
             }
         });
     });
 }
+
+export { download, info };

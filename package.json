@@ -4,7 +4,10 @@
     "main": "app.js",
     "scripts": {
         "start": "NODE_ENV=production node /app/bin/www",
-        "dev": "nodemon --quiet --legacy-watch -c /app/nodemon.json"
+        "dev": "nodemon --quiet --legacy-watch -c /app/nodemon.json",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write ."
     },
     "keywords": [],
     "author": "",
@@ -28,6 +31,15 @@
         "winston": "^3.17.0"
     },
     "devDependencies": {
-        "nodemon": "^3.1.9"
+        "@eslint/js": "^9.19.0",
+        "eslint": "^9.19.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.3",
+        "eslint-plugin-promise": "^7.2.1",
+        "eslint-plugin-security": "^3.0.1",
+        "globals": "^15.14.0",
+        "nodemon": "^3.1.9",
+        "prettier": "^3.4.2"
     }
 }
