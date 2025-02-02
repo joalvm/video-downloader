@@ -156,6 +156,12 @@ function makeVideoInfo(data) {
 pasteBtn.addEventListener('click', async () => {
     try {
         const text = await navigator.clipboard.readText();
+
+        // Verificar que sea una URL
+        if (!text.match(/^(http|https):\/\/[^ "]+$/)) {
+            return;
+        }
+
         urlInput.value = text;
     } catch (err) {
         console.error('Failed to read clipboard contents: ', err);
