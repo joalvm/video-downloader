@@ -48,57 +48,59 @@ async function download(url, outputDir) {
  *
  * @returns {Promise<{
  *  id: string,
- *  artist: string,
  *  title: string,
  *  description: string,
  *  thumbnail: string,
  *  duration: number,
  *  extractor: string,
  *  extractor_key: string,
- *  filesize: number,
- *  ext: string,
- *  width: number,
- *  height: number,
- *  formats: object[]
  * }>}
  */
 async function info(url) {
     return new Promise((resolve, reject) => {
-        const command = ['--ignore-errors', '--print-json', '--skip-download', url];
+        const printOtions = [
+            '"id":%(id|null)j',
+            '"title":%(title|null)j',
+            '"description":%(description|null)j',
+            '"thumbnail":%(thumbnail|url|null)j',
+            '"original_url":%(original_url|null)j',
+            '"url":%(url|null)j',
+            '"duration":%(duration|null)j',
+            '"extractor":%(extractor|null)j',
+            '"extractor_key":%(extractor_key|null)j',
+            '"uploader":%(uploader|null)j',
+            '"uploader_url":%(uploader_url|null)j',
+        ].join(',');
 
-        execFile('yt-dlp', command, {encoding: 'utf-8'}, (error, stdout) => {
+        const command = [
+            '--ignore-errors',
+            '--print', `{${printOtions}}`,
+            '--yes-playlist',
+            '--skip-download',
+            '--no-playlist-reverse',
+            url
+        ];
+
+        execFile('yt-dlp', command, (error, stdout) => {
             if (error) {
                 reject(error);
 
                 return;
             }
 
-            const content = stdout?.toString()?.trim();
-
-            if (!content) {
-                reject(new EmptyInfoResponseError());
-
-                return;
-            }
-
             try {
-                const data = JSON.parse(content);
+                const outputs = stdout
+                    .trim()
+                    .split('\n')
+                    .map((e) => JSON.parse(e));
 
-                resolve({
-                    id: data?.id,
-                    artist: data?.artist,
-                    title: data?.title,
-                    description: data.description,
-                    thumbnail: data.thumbnail || data.url,
-                    duration: data?.duration,
-                    extractor: data?.extractor,
-                    extractor_key: data?.extractor_key,
-                    filesize: data?.filesize,
-                    ext: data?.ext,
-                    width: data?.width,
-                    height: data?.height,
-                    formats: data?.formats || [],
-                });
+                if (!outputs.length) {
+                    reject(new EmptyInfoResponseError());
+
+                    return;
+                }
+
+                resolve(outputs);
             } catch {
                 reject(new InvalidParseInfoError());
             }
