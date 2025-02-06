@@ -9,23 +9,43 @@ import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
  * @async
  *
  * @param {string} url - La URL del video a descargar.
+ * @param {('video'|'audio'|'video_audio')} format - El formato del archivo a descargar.
  * @param {string} outputDir - La ruta del directorio de salida.
  *
  * @returns {Promise<string>} Una promesa que se resuelve con la ruta del archivo del video descargado.
  *
  * @throws {Error} Si el proceso de descarga falla.
  */
-async function download(url, outputDir) {
+async function download(url, outputDir, format = 'video_audio') {
     return new Promise((resolve, reject) => {
+        const formats = {
+            video: 'bestvideo/best',
+            audio: 'bestaudio/best',
+            video_audio: 'bestvideo*+bestaudio/best',
+        }
+
         const command = [
-            '-f', 'bestvideo*+bestaudio/best',
+            '-f', formats[format],
             '-P', outputDir,
             '-o', '%(id)s.%(ext)s',
             '--add-metadata',
-            '--embed-thumbnail',
-            '--print', 'after_move:filepath',
-            url,
+            '--print', 'after_move:filepath'
         ];
+
+        // Opciones específicas para audio
+        if (format === 'audio') {
+            command.push(
+                '--extract-audio',
+                '--audio-format', 'mp3',
+                '--audio-quality', '0' // Máxima calidad
+            );
+        }
+
+        if (['video', 'video_audio'].includes(format)) {
+            command.push('--embed-thumbnail', '--merge-output-format', 'mp4');
+        }
+
+        command.push(url); // La URL siempre al final
 
         execFile('yt-dlp', command, {encoding: 'utf-8'}, (error, stdout) => {
             if (error) {

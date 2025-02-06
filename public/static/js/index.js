@@ -30,13 +30,13 @@
     async function handleDownload() {
         const downloadBtn = this;
         const url = downloadBtn.dataset.url;
+        const format = downloadBtn.dataset.format;
 
         const icon = lucide.createElement(lucide.LoaderCircle);
 
         icon.setAttribute('class', 'animate-spin h-5 w-5');
 
         downloadBtn.innerHTML = ``;
-        downloadBtn.textContent = 'Descargando...';
         downloadBtn.prepend(icon);
         downloadBtn.disabled = true;
 
@@ -46,7 +46,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({url}),
+                body: JSON.stringify({url, format}),
             });
 
             if (response.ok) {
@@ -75,11 +75,73 @@
             downloadIcon.setAttribute('class', 'h-5 w-5 mr-2');
 
             downloadBtn.innerHTML = ``;
-            downloadBtn.textContent = ' Descargar';
-            downloadBtn.prepend(downloadIcon);
             downloadBtn.disabled = false;
+
+            if (downloadBtn.dataset.format === 'audio') {
+                downloadBtn.prepend(lucide.createElement(lucide.Music));
+            } else {
+                downloadBtn.prepend(lucide.createElement(lucide.Video));
+            }
         }
     }
+
+    function makeButton(title, url, format, icon) {
+        /** @type {HTMLButtonElement} */
+        const button = document.createElement('button');
+        const buttonIcon = lucide.createElement(icon);
+
+        buttonIcon.setAttribute('class', 'h-5 w-5');
+
+        button.classList.add(
+            'w-full',
+            'inline-flex',
+            'items-center',
+            'justify-center',
+            'gap-2',
+            'whitespace-nowrap',
+            'rounded-md',
+            'text-sm',
+            'font-medium',
+            'transition-colors',
+            'focus-visible:outline-none',
+            'focus-visible:ring-1',
+            'focus-visible:ring-ring',
+            'disabled:pointer-events-none',
+            'disabled:opacity-50',
+            '[&_svg]:pointer-events-none',
+            '[&_svg]:size-4',
+            '[&_svg]:shrink-0',
+            'border',
+            'border-input',
+            'bg-background',
+            'shadow-sm',
+            'hover:bg-accent',
+            'hover:text-accent-foreground',
+            'h-10',
+            'rounded-md',
+            'px-8'
+        );
+        button.title = title;
+        button.dataset.url = url;
+        button.dataset.format = format;
+        button.prepend(buttonIcon);
+        button.addEventListener('click', handleDownload);
+
+        return button;
+    }
+
+    function makeButtons(data) {
+        const container = document.createElement('div');
+        const audioButton = makeButton('Descargar solo audio', data.original_url || data.url, 'audio', lucide.Music);
+        const videoAudioButton = makeButton('Descargar video con audio', data.original_url || data.url, 'video_audio', lucide.Video);
+
+        container.classList.add('flex', 'gap-2', 'my-2', 'justify-center');
+
+        container.append(audioButton, videoAudioButton);
+
+        return container;
+    }
+
 
     function makeVideoInfo(data) {
         const container = document.createElement('div');
@@ -90,9 +152,6 @@
         const title = document.createElement('h2');
         const duration = document.createElement('p');
         const description = document.createElement('p');
-        /** @type {HTMLButtonElement} */
-        const downloadBtn = document.createElement('button');
-        const downloadIcon = lucide.createElement(lucide.Download);
 
         container.classList.add('flex', 'flex-col', 'md:flex-row', 'gap-4', 'my-2', 'p-4', 'bg-white', 'rounded-md', 'shadow-md');
 
@@ -113,39 +172,22 @@
         thumbnail.alt = data.title;
 
         containerInfo.classList.add('md:w-4/6', 'flex', 'flex-col', 'justify-between');
+
         title.classList.add('text-md', 'font-bold', 'mb-2', 'text-gray-800', 'line-clamp-2');
         title.textContent = data.title;
+
         duration.classList.add('text-sm', 'text-gray-600', 'mb-2');
         duration.textContent = `Duración: ${humanDuration(data.duration)}`;
+
         description.classList.add('text-sm', 'text-gray-600', 'mb-2', 'line-clamp-3');
         description.textContent = data.description || 'Sin descripción';
-        downloadBtn.classList.add(
-            'w-full',
-            'px-6',
-            'py-3',
-            'bg-green-500',
-            'text-white',
-            'rounded-lg',
-            'hover:bg-green-600',
-            'transition-colors',
-            'duration-200',
-            'flex',
-            'items-center',
-            'justify-center',
-        );
-
-        downloadIcon.setAttribute('class', 'h-5 w-5 mr-2');
-        downloadBtn.textContent = 'Descargar';
-        downloadBtn.prepend(downloadIcon);
-        downloadBtn.dataset.url = data.original_url || data.url;
-        downloadBtn.addEventListener('click', handleDownload);
 
         containerinfoInner.appendChild(title);
         containerinfoInner.appendChild(duration);
         containerinfoInner.appendChild(description);
 
         containerInfo.appendChild(containerinfoInner);
-        containerInfo.appendChild(downloadBtn);
+        containerInfo.append(makeButtons(data));
 
         containerThumbnail.appendChild(thumbnail);
 
