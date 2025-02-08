@@ -12,19 +12,47 @@
         return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${seconds}s`;
     }
 
-    function errorAlert(message) {
-        const alert = document.createElement('div');
-        const icon = lucide.createElement(lucide.AlertCircle);
-        const text = document.createElement('p');
+    async function wait(seconds) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, seconds * 1000);
+        });
+    }
 
-        alert.classList.add('flex', 'items-center', 'bg-red-100', 'border', 'border-red-400', 'text-red-700', 'px-4', 'py-3', 'rounded', 'relative', 'mb-4');
-        icon.setAttribute('class', 'h-5 w-5 mr-2');
-        text.textContent = message;
+    async function download(url, format) {
+        let attempts = 0;
+        const maxAttempts = 5;
 
-        alert.appendChild(icon);
-        alert.appendChild(text);
+        while (attempts <= maxAttempts) {
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({url, format}),
+                });
 
-        return alert;
+                if (response.ok) {
+                    return {
+                        blob: await response.blob(),
+                        filename: response.headers
+                            .get('Content-Disposition')
+                            .split('filename=')[1]
+                            .replace(/"/g, '')
+                            .replace(/\\/g, ''),
+                    };
+                } else {
+                    if (attempts === 1) {
+                        return null;
+                    }
+                }
+            } catch (err) {
+                notify.error('Error al descargar el video');
+            } finally {
+                attempts--;
+                await wait(3);
+            }
+        }
     }
 
     async function handleDownload() {
@@ -41,34 +69,23 @@
         downloadBtn.disabled = true;
 
         try {
-            const response = await fetch('/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({url, format}),
-            });
 
-            if (response.ok) {
-                const blob = await response.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = downloadUrl;
-                a.download = response.headers
-                    .get('Content-Disposition')
-                    .split('filename=')[1]
-                    .replace(/"/g, '')
-                    .replace(/\\/g, '');
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(downloadUrl);
-            } else {
-                alert('Error al descargar el video');
+            const response = await download(url, format);
+
+            if (!response) {
+                throw new Error('Error al descargar el video');
             }
+
+            const downloadUrl = window.URL.createObjectURL(response.blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            a.download = response.filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
         } catch (error) {
-            console.error('Error downloading video:', error);
-            alert('Error al descargar el video');
+            notify.error(error.message || 'Error al descargar el video');
         } finally {
             const downloadIcon = lucide.createElement(lucide.Download);
 
@@ -207,15 +224,18 @@
             }
 
             urlInput.value = text;
+
+            searchBtn.click();
         } catch (err) {
-            console.error('Failed to read clipboard contents: ', err);
+            notify.error(err.message || 'Error al pegar la URL');
         }
     }
 
     async function handleSearchBtnClick () {
         const url = urlInput.value.trim();
+        let withError = false;
 
-        if (!url) {
+        if (!url || !url.match(/^(http|https):\/\/[^ "]+$/)) {
             return;
         }
 
@@ -237,27 +257,15 @@
             const data = await response.json();
 
             if (response.status >= 400) {
-                videoInfo.append(errorAlert(data.message || 'Error al obtener la información del video'));
-                setTimeout(() => {
-                    videoInfo.innerHTML = ``;
-                    urlInput.value = ``;
-                    urlInput.focus();
-                }, 10000);
-                return;
+                throw new Error(data.message);
             }
 
             for (const item of data) {
                 videoInfo.appendChild(makeVideoInfo(item));
             }
-
-            // videoInfo.appendChild(makeVideoInfo(data));
         } catch (error) {
-            videoInfo.append(errorAlert(error.message || 'Error al obtener la información del video'));
-            setTimeout(() => {
-                videoInfo.innerHTML = ``;
-                urlInput.value = ``;
-                urlInput.focus();
-            }, 10000);
+            notify.error(error.message || 'Error al obtener la información del video');
+            withError = true;
         } finally {
             const icon = lucide.createElement(lucide.Search);
 
@@ -267,15 +275,34 @@
             searchBtn.appendChild(icon);
 
             searchBtn.disabled = false;
-            urlInput.disabled = false;
             pasteBtn.disabled = false;
+            urlInput.disabled = false;
+
+            urlInput.value = ``;
+
+            if (withError) {
+                urlInput.focus();
+            } else {
+                videoInfo.querySelectorAll('button')?.[0]?.focus();
+            }
         }
     }
 
+    /**
+     * Manejar el evento de pegar en el input
+     *
+     * @param {ClipboardEvent} e
+     */
     function handleInputPaste(e) {
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData('text');
-        urlInput.value = text;
+        const text = (e.clipboardData || window.clipboardData).getData('text')
+
+        // Verificar que sea una url
+        if (!text.match(/^(http|https):\/\/[^ "]+$/)) {
+            return;
+        }
+
+        urlInput.value = text.trim();
+
         searchBtn.click();
     }
 

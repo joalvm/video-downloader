@@ -33,18 +33,18 @@ function securityMiddleware(app) {
                     "'self'",
                     (_, res) => `'nonce-${res.locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
-                    "https://unpkg.com/lucide@latest"
+                    "https://unpkg.com/lucide@latest",
                 ],
                 scriptSrcElem: [
                     "'self'",
                     (_, res) => `'nonce-${res.locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
-                    "https://unpkg.com/lucide@latest"
+                    "https://unpkg.com/lucide@latest",
                 ],
                 styleSrc: [
                     "'self'",
                     "'unsafe-inline'", // Necesario para Tailwind
-                    "https://cdn.tailwindcss.com"
+                    "https://cdn.tailwindcss.com",
                 ],
                 imgSrc: ["'self'", "data:", "https://unpkg.com/lucide@latest"],
                 fontSrc: ["'self'", "data:"],

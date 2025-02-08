@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Downloader</title>
-    <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8" src="https://cdn.tailwindcss.com"></script>
+    <link nonce="<%= nonce %>" type="text/css" rel="stylesheet" href="static/css/index.css">
 </head>
 <body class="h-full flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white">
+    <div id="notification-bar" class="fixed top-0 left-0 w-full z-50"></div>
     <div class="w-full max-w-2xl mx-auto p-6">
         <div class="relative">
             <input type="search" id="urlInput" autofocus placeholder="Pega la URL del video aquí" class="w-full px-4 py-3 pr-[84px] rounded-lg shadow-md border-gray-300 focus:border-blue-600 focus:outline-2 focus:outline-offset-[-1px] focus:outline-solid focus:outline-blue-600">
@@ -22,10 +23,12 @@
         <div id="videoInfo" class="mt-8"></div>
     </div>
 
-    <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8" src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8" src="https://cdn.tailwindcss.com"></script>
+    <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8" src="https://unpkg.com/lucide@0.474.0"></script>
     <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8">
         lucide.createIcons();
     </script>
+    <script nonce="<%= nonce %>" type="text/javascript" charset="utf-8" src="static/js/notification.js"></script>
     <script nonce="<%= nonce %>" type="text/javascript"charset="utf-8" src="static/js/index.js"></script>
 </body>
 </html>

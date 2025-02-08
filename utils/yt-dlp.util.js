@@ -27,7 +27,8 @@ async function download(url, outputDir, format = 'video_audio') {
         const command = [
             '-f', formats[format],
             '-P', outputDir,
-            '-o', '%(id)s.%(ext)s',
+            '--restrict-filenames',
+            '-o', '%(title|lower).40s__%(uploader|lower).15s__%(id)s.%(ext)s',
             '--add-metadata',
             '--print', 'after_move:filepath'
         ];
@@ -42,7 +43,7 @@ async function download(url, outputDir, format = 'video_audio') {
         }
 
         if (['video', 'video_audio'].includes(format)) {
-            command.push('--embed-thumbnail', '--merge-output-format', 'mp4');
+            command.push('--merge-output-format', 'mp4');
         }
 
         command.push(url); // La URL siempre al final
