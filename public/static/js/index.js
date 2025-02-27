@@ -24,7 +24,7 @@
 
         while (attempts <= maxAttempts) {
             try {
-                const response = await fetch('/download', {
+                const response = await fetch('/api/download', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -185,7 +185,7 @@
         );
 
         thumbnail.classList.add('max-h-48');
-        thumbnail.src = `/proxy?url=${encodeURIComponent(data.thumbnail)}`;
+        thumbnail.src = `/api/proxy?url=${encodeURIComponent(data.thumbnail)}`;
         thumbnail.alt = data.title;
 
         containerInfo.classList.add('md:w-4/6', 'flex', 'flex-col', 'justify-between');
@@ -253,7 +253,7 @@
         videoInfo.innerHTML = ``;
 
         try {
-            const response = await fetch(`/info?url=${encodeURIComponent(url)}`);
+            const response = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
             if (response.status >= 400) {

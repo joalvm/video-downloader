@@ -27,7 +27,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(normalize('./public')));
 
 app.use(viewsRoutes);
-app.use(apiRoutes);
+app.use('/api', apiRoutes);
 
 errorHandlerMiddleware(app);
 
