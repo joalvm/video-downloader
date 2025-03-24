@@ -23,9 +23,7 @@ function securityMiddleware(app) {
         res.locals.nonce = randomBytes(16).toString("base64");
 
         next();
-    });
-
-    app.use(helmet({
+    }).use(helmet({
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
@@ -52,16 +50,11 @@ function securityMiddleware(app) {
                 upgradeInsecureRequests: process.env.NODE_ENV === "production" ? [] : null,
             },
         },
-    }));
-
-    app.use(cors({
+    })).use(cors({
         origin: '*',
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
-    }));
-
-    // Limita la cantidad de peticiones a 100 por minuto.
-    app.use(
+    })).use(
         rateLimit({
             windowMs: 1 * 60 * 1000,
             max: 100,

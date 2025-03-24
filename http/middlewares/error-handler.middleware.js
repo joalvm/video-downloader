@@ -18,6 +18,7 @@ function errorHandlerMiddleware(app) {
 
     // Manejo general de errores
     app.use((err, _, res, __) => {
+      console.log(err);
         res.status(err.status || 500).json({ message: err.message });
     });
 }
