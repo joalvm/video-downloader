@@ -1,4 +1,6 @@
 import { Readable } from 'node:stream';
+import { ReadableStream as NodeReadableStream } from 'node:stream/web';
+
 import { Request, Response } from 'express';
 
 import InvalidOrMissingUrlError from '@errors/invalid-or-missing-url.error';
@@ -25,7 +27,7 @@ async function proxyHandler(req: ProxyRequest, res: Response) {
         throw new Error('Response body is null');
     }
 
-    Readable.fromWeb(response.body as any).pipe(res);
+    Readable.fromWeb(response.body as unknown as NodeReadableStream).pipe(res);
 }
 
 export default proxyHandler;

@@ -1,6 +1,5 @@
-import createHttpError from "http-errors";
+import createHttpError, {HttpError} from "http-errors";
 import { Express, Request, Response, NextFunction } from 'express';
-import {HttpError} from 'http-errors';
 
 /**
  * Middleware de manejo de errores.

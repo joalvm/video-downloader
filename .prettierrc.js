@@ -20,4 +20,13 @@ module.exports = {
     tabWidth: 4,
     useTabs: false,
     embeddedLanguageFormatting: 'auto',
+    // Asegurar que reconozca archivos TypeScript
+    overrides: [
+        {
+            files: '*.{ts,tsx}',
+            options: {
+                parser: 'typescript',
+            },
+        },
+    ],
 };

@@ -1,22 +1,18 @@
 {
     "compilerOptions": {
-        "rootDir": "src",
-        "outDir": "build",
-        "target": "ESNext",
-        "module": "NodeNext",
-        "moduleResolution": "nodenext",
-        "esModuleInterop": true,
-        "strict": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "sourceMap": true,
+        "module": "commonjs",
         "declaration": true,
         "removeComments": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2023",
+        "sourceMap": false,
+        "outDir": "./build",
+        "baseUrl": "./",
+        "incremental": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
         "types": [
             "./src/types.d.ts"
         ],
@@ -38,6 +34,9 @@
             ]
         }
     },
+    "include": [
+        "src/**/*"
+    ],
     "exclude": [
         "node_modules",
         "build"

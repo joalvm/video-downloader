@@ -1,9 +1,10 @@
 import { randomBytes } from 'crypto';
+import { ServerResponse } from 'node:http';
+
 import helmet from 'helmet';
 import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import { Express, Response, NextFunction, Request } from 'express';
-import { ServerResponse } from 'node:http';
 
 /**
  * Middleware de seguridad para la aplicación.
