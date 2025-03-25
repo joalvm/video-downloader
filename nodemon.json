@@ -1,23 +1,25 @@
 {
-    "watch": [
-        "bin/",
-        "errors/",
-        "http/",
-        "public/",
-        "routes/",
-        "views/",
-        "utils/",
-        ".env",
-        "app.js",
-        "package.json"
-    ],
-    "ext": "js,json",
+    "restartable": "rs",
     "ignore": [
-        "node_modules",
-        "logs"
+        "node_modules/",
+        ".git/",
+        "build/",
+        ".eslintrc.js",
+        ".prettierrc.js",
+        ".editorconfig",
+        ".git",
+        ".gitignore",
+        "README.md",
+        "nodemon.json",
+        "package.json",
+        "package-lock.json",
     ],
-    "exec": "NODE_ENV=development node /app/bin/www",
-    "env": {
-        "CHOKIDAR_USEPOLLING": "true"
-    }
+    "verbose": false,
+    "execMap": {
+        "ts": "node --loader ts-node/esm -r tsconfig-paths/register"
+    },
+    "watch": [
+        "src/"
+    ],
+    "ext": "js,ts,json,ejs"
 }

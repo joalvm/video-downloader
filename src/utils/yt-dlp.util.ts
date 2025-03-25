@@ -3,22 +3,32 @@ import { execFile } from "node:child_process";
 import EmptyInfoResponseError from '../errors/empty-info-response.error.js';
 import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
 
+type VideoFormat = 'video' | 'audio' | 'video_audio';
+
+interface VideoInfo {
+    id: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    original_url: string;
+    url: string;
+    duration: number;
+    extractor: string;
+    extractor_key: string;
+    uploader: string;
+    uploader_url: string;
+}
+
 /**
  * Descarga un video desde la URL proporcionada usando una herramienta de línea de comandos.
  *
  * @async
  *
- * @param {string} url - La URL del video a descargar.
- * @param {('video'|'audio'|'video_audio')} format - El formato del archivo a descargar.
- * @param {string} outputDir - La ruta del directorio de salida.
- *
- * @returns {Promise<string>} Una promesa que se resuelve con la ruta del archivo del video descargado.
- *
  * @throws {Error} Si el proceso de descarga falla.
  */
-async function download(url, outputDir, format = 'video_audio') {
+async function download(url: string, outputDir: string, format: VideoFormat = 'video_audio'): Promise<string> {
     return new Promise((resolve, reject) => {
-        const formats = {
+        const formats: Record<VideoFormat, string> = {
             video: 'bestvideo/best',
             audio: 'bestaudio/best',
             video_audio: 'bestvideo*+bestaudio/best',
@@ -62,22 +72,8 @@ async function download(url, outputDir, format = 'video_audio') {
 
 /**
  * Obtiene información sobre un video desde la URL proporcionada.
- *
- * @async
- *
- * @param {string} url
- *
- * @returns {Promise<{
- *  id: string,
- *  title: string,
- *  description: string,
- *  thumbnail: string,
- *  duration: number,
- *  extractor: string,
- *  extractor_key: string,
- * }>}
  */
-async function info(url) {
+async function info(url: string): Promise<VideoInfo[]> {
     return new Promise((resolve, reject) => {
         const printOtions = [
             '"id":%(id|null)j',
@@ -113,7 +109,7 @@ async function info(url) {
                 const outputs = stdout
                     .trim()
                     .split('\n')
-                    .map((e) => JSON.parse(e));
+                    .map((e) => JSON.parse(e) as VideoInfo);
 
                 if (!outputs.length) {
                     reject(new EmptyInfoResponseError());
