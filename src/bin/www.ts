@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import http from 'http';
-import https from 'https';
-import fs from 'fs';
-import { tmpdir } from 'os';
-import { AddressInfo } from 'net';
+import http from 'node:http';
+import https from 'node:https';
+import fs from 'node:fs';
+import { tmpdir } from 'node:os';
+import { AddressInfo } from 'node:net';
 
 import winston from 'winston';
 
