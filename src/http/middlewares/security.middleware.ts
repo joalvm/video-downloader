@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import { Express, Response, NextFunction, Request } from 'express';
-import { ServerResponse } from 'http';
+import { ServerResponse } from 'node:http';
 
 /**
  * Middleware de seguridad para la aplicación.
@@ -14,8 +14,6 @@ import { ServerResponse } from 'http';
  * 2. Configura políticas de seguridad de contenido (CSP) usando Helmet, permitiendo solo fuentes específicas para scripts, estilos, imágenes y fuentes.
  * 3. Habilita CORS para permitir solicitudes desde cualquier origen con métodos específicos.
  * 4. Limita la cantidad de peticiones a 100 por minuto para prevenir abusos.
- *
- * @returns {void}
  */
 function securityMiddleware(app: Express): void {
     app.use((_, res: Response, next: NextFunction) => {
@@ -28,13 +26,13 @@ function securityMiddleware(app: Express): void {
                 defaultSrc: ["'self'"],
                 scriptSrc: [
                     "'self'",
-                    (_, res: ServerResponse) => `'nonce-${res.locals.nonce}'`,
+                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
                     "https://unpkg.com/lucide@latest",
                 ],
                 scriptSrcElem: [
                     "'self'",
-                    (_, res: ServerResponse) => `'nonce-${res.locals.nonce}'`,
+                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
                     "https://unpkg.com/lucide@latest",
                 ],

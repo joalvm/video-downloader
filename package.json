@@ -3,12 +3,13 @@
     "version": "1.0.0",
     "main": "build/app.js",
     "scripts": {
+        "clean": "rimraf build",
         "start": "NODE_ENV=production node -r tsconfig-paths/register build/app.js",
         "dev": "nodemon --quiet --legacy-watch -c nodemon.json src/bin/www.ts",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "build": "tsc",
+        "build": "npm run clean && tsc",
         "watch": "tsc --watch"
     },
     "keywords": [],
@@ -51,6 +52,7 @@
         "globals": "^16.0.0",
         "nodemon": "^3.1.9",
         "prettier": "^3.5.3",
+        "rimraf": "^6.0.1",
         "ts-node": "^10.9.2",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.8.2"
