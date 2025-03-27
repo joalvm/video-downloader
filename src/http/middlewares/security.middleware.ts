@@ -1,13 +1,13 @@
 import { randomBytes } from 'crypto';
+import { ServerResponse } from 'node:http';
 
 import helmet from 'helmet';
 import cors from 'cors';
-import {rateLimit} from 'express-rate-limit';
+import { rateLimit } from 'express-rate-limit';
+import { Express, Response, NextFunction, Request } from 'express';
 
 /**
  * Middleware de seguridad para la aplicación.
- *
- * @param {import('express').Express} app - La instancia de la aplicación Express.
  *
  * @description
  * Este middleware configura varias medidas de seguridad para la aplicación:
@@ -15,11 +15,9 @@ import {rateLimit} from 'express-rate-limit';
  * 2. Configura políticas de seguridad de contenido (CSP) usando Helmet, permitiendo solo fuentes específicas para scripts, estilos, imágenes y fuentes.
  * 3. Habilita CORS para permitir solicitudes desde cualquier origen con métodos específicos.
  * 4. Limita la cantidad de peticiones a 100 por minuto para prevenir abusos.
- *
- * @returns {void}
  */
-function securityMiddleware(app) {
-    app.use((_, res, next) => {
+function securityMiddleware(app: Express): void {
+    app.use((_, res: Response, next: NextFunction) => {
         res.locals.nonce = randomBytes(16).toString("base64");
 
         next();
@@ -29,13 +27,13 @@ function securityMiddleware(app) {
                 defaultSrc: ["'self'"],
                 scriptSrc: [
                     "'self'",
-                    (_, res) => `'nonce-${res.locals.nonce}'`,
+                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
                     "https://unpkg.com/lucide@latest",
                 ],
                 scriptSrcElem: [
                     "'self'",
-                    (_, res) => `'nonce-${res.locals.nonce}'`,
+                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
                     "https://cdn.tailwindcss.com",
                     "https://unpkg.com/lucide@latest",
                 ],
@@ -59,7 +57,7 @@ function securityMiddleware(app) {
             windowMs: 1 * 60 * 1000,
             max: 100,
             validate: { trustProxy: true },
-            keyGenerator: (req) => req.ip,
+            keyGenerator: (req: Request): string => req.ip || '',
         })
     );
 }

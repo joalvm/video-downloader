@@ -1,15 +1,11 @@
 /**
  * Normaliza el puerto en un número, cadena o false.
- *
- * @param {any} val
- *
- * @returns {number | string | false}
  */
-function normalizePort(val) {
-    const port = parseInt(val, 10);
+function normalizePort(val: string | number): number | string | false {
+    const port = parseInt(val.toString(), 10);
 
     if (isNaN(port)) {
-        return val;
+        return val.toString();
     }
 
     if (port >= 0) {
