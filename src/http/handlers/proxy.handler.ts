@@ -3,7 +3,7 @@ import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import { Request, Response } from 'express';
 
-import InvalidOrMissingUrlError from '@errors/invalid-or-missing-url.error';
+import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
 
 type ProxyRequest = Request<{}, {}, {}, { url: string }>;
 

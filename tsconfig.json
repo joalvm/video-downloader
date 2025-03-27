@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "declaration": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "declaration": false,
         "removeComments": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -13,29 +14,16 @@
         "incremental": true,
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
-        "types": [
-            "./src/types.d.ts"
-        ],
+        "moduleDetection": "force",
+        "resolveJsonModule": true,
         "paths": {
-            "@errors/*": [
-                "./src/errors/*"
-            ],
-            "@http/*": [
-                "./src/http/*"
-            ],
-            "@routes/*": [
-                "./src/routes/*"
-            ],
-            "@utils/*": [
-                "./src/utils/*"
-            ],
-            "@bin/*": [
-                "./src/bin/*"
+            "@/*": [
+                "./src/*"
             ]
         }
     },
     "include": [
-        "src/**/*"
+        "src"
     ],
     "exclude": [
         "node_modules",

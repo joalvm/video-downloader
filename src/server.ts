@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 
-import http from 'http';
-import https from 'https';
-import fs from 'fs';
+import http from 'node:http';
+import https from 'node:https';
+import fs from 'node:fs';
+import { tmpdir } from 'node:os';
+import { AddressInfo } from 'node:net';
+
 import winston from 'winston';
-import { tmpdir } from 'os';
-import app from '../app.js';
-import normalizePort from '../utils/normalize-port.util.js';
+
+
+import app from '@/app';
+import normalizePort from '@/utils/normalize-port.util';
 
 // Configuración del puerto
 const DEFAULT_PORT = 3000;
@@ -26,10 +30,9 @@ const logger = winston.createLogger({
         winston.format.simple(),
     ),
     transports: [
-        new winston.transports.Console({level: 'info'}),
+        new winston.transports.Console({ level: 'info' }),
         new winston.transports.File({
-            level: 'error',
-            filename: 'combined.log',
+            level: 'error', filename: 'combined.log',
             dirname: tmpdir() + '/logs'
         }),
     ],
@@ -48,27 +51,32 @@ const server = process.env.NODE_ENV === 'production'
 // Escuchar en el puerto
 server.listen(port);
 
-server.on('error', function (error) {
+// Definir el tipo para error
+type ErrnoException = Error & {
+    code?: string;
+    syscall?: string;
+};
+
+server.on('error', function (error: ErrnoException) {
     if (error.syscall !== 'listen') {
         throw error;
     }
 
     const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
-    switch (error.code) {
-        case 'EACCES':
-            logger.error(`${bind} requiere privilegios elevados.`);
-            process.exit(1);
-        case 'EADDRINUSE':
-            logger.error(`${bind} está en uso.`);
-            process.exit(1);
-        default:
-            throw error;
+    if (error.code === 'EACCES') {
+        logger.error(`${bind} requiere privilegios elevados.`);
+        process.exit(1);
+    } else if (error.code === 'EADDRINUSE') {
+        logger.error(`${bind} está en uso.`);
+        process.exit(1);
+    } else {
+        throw error;
     }
 });
 
 server.on('listening', function () {
-    const addr = server.address();
+    const addr = server.address() as AddressInfo;
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
     logger.info(`Listening on ${bind}`);

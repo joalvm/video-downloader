@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import InvalidOrMissingUrlError from "@errors/invalid-or-missing-url.error";
-import { info } from "@utils/yt-dlp.util";
+import InvalidOrMissingUrlError from "@/errors/invalid-or-missing-url.error";
+import { info } from "@/utils/yt-dlp.util";
 
 /**
  *

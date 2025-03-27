@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 
-import EmptyInfoResponseError from '../errors/empty-info-response.error.js';
-import InvalidParseInfoError from '../errors/invalid-parse-info.error.js';
+import EmptyInfoResponseError from '@/errors/empty-info-response.error';
+import InvalidParseInfoError from '@/errors/invalid-parse-info.error';
 
 type VideoFormat = 'video' | 'audio' | 'video_audio';
 
@@ -35,6 +35,8 @@ async function download(url: string, outputDir: string, format: VideoFormat = 'v
         }
 
         const command = [
+            '--no-check-certificates',
+            '--age-limit', '99',
             '-f', formats[format],
             '-P', outputDir,
             '--restrict-filenames',
@@ -58,7 +60,7 @@ async function download(url: string, outputDir: string, format: VideoFormat = 'v
 
         command.push(url); // La URL siempre al final
 
-        execFile('yt-dlp', command, {encoding: 'utf-8'}, (error, stdout) => {
+        execFile('yt-dlp', command, { encoding: 'utf-8' }, (error, stdout) => {
             if (error) {
                 reject(error);
 
@@ -90,13 +92,16 @@ async function info(url: string): Promise<VideoInfo[]> {
         ].join(',');
 
         const command = [
+            '--no-check-certificates',
+            '--age-limit', '99',
             '--ignore-errors',
             '--print', `{${printOtions}}`,
             '--yes-playlist',
             '--skip-download',
-            '--no-playlist-reverse',
-            url
+            '--no-playlist-reverse'
         ];
+
+        command.push(url);
 
         execFile('yt-dlp', command, (error, stdout) => {
             if (error) {

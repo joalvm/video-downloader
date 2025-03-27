@@ -1,22 +1,19 @@
 {
     "name": "youtube-downloader",
     "version": "1.0.0",
-    "main": "build/app.js",
     "scripts": {
         "clean": "rimraf build",
-        "start": "NODE_ENV=production node -r tsconfig-paths/register build/app.js",
-        "dev": "nodemon --quiet --legacy-watch -c nodemon.json src/bin/www.ts",
+        "build": "npm run clean && tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+        "start": "node -r tsconfig-paths/register build/server.js",
+        "dev": "tsx watch --include=. --exclude=build --exclude=node_modules src/server.ts",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "build": "npm run clean && tsc",
-        "watch": "tsc --watch"
+        "format": "prettier --write ."
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "description": "",
-    "type": "module",
     "dependencies": {
         "compression": "^1.8.0",
         "cookie-parser": "^1.4.7",
@@ -46,6 +43,7 @@
         "@types/node": "^22.13.13",
         "@typescript-eslint/eslint-plugin": "^8.28.0",
         "@typescript-eslint/parser": "^8.28.0",
+        "esbuild-wasm": "^0.25.1",
         "eslint": "^9.23.0",
         "eslint-config-prettier": "^10.1.1",
         "eslint-import-resolver-typescript": "^4.2.2",
@@ -54,11 +52,11 @@
         "eslint-plugin-promise": "^7.2.1",
         "eslint-plugin-security": "^3.0.1",
         "globals": "^16.0.0",
-        "nodemon": "^3.1.9",
         "prettier": "^3.5.3",
         "rimraf": "^6.0.1",
-        "ts-node": "^10.9.2",
+        "tsc-alias": "^1.8.11",
         "tsconfig-paths": "^4.2.0",
+        "tsx": "^4.19.3",
         "typescript": "^5.8.2"
     }
 }
