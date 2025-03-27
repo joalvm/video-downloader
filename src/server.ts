@@ -8,9 +8,8 @@ import { AddressInfo } from 'node:net';
 
 import winston from 'winston';
 
-
 import app from '@/app';
-import normalizePort from '@/utils/normalize-port.util';
+import normalizePort from '@/shared/utils/normalize-port.util';
 
 // Configuración del puerto
 const DEFAULT_PORT = 3000;
@@ -69,6 +68,9 @@ server.on('error', function (error: ErrnoException) {
         process.exit(1);
     } else if (error.code === 'EADDRINUSE') {
         logger.error(`${bind} está en uso.`);
+        process.exit(1);
+    } else if (error.code === 'ECONNREFUSED') {
+        logger.error(`${bind} no está en uso.`);
         process.exit(1);
     } else {
         throw error;

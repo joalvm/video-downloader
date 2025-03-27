@@ -1,16 +1,15 @@
 import { Router } from 'express';
 
-import proxyHandle from '@/http/handlers/proxy.handler';
-import infoHanlder from '@/http/handlers/info.handler';
-import downloadHandler from '@/http/handlers/download.handler';
+import ProxyController from '@/http/controllers/proxy.controller';
+import VideoController from '@/http/controllers/video.controller';
 
 const routes = Router();
 
 // Ruta para obtener miniaturas de videos
-routes.get('/proxy', proxyHandle);
+routes.get('/proxy', ProxyController.index);
 // Muestra información del video
-routes.get('/info', infoHanlder);
+routes.get('/video/info', VideoController.info);
 // Ruta para descargar un video
-routes.post('/download', downloadHandler);
+routes.post('/video/download', VideoController.download);
 
 export default routes;

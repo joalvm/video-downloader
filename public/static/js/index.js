@@ -24,12 +24,12 @@
 
         while (attempts <= maxAttempts) {
             try {
-                const response = await fetch('/api/download', {
+                const response = await fetch('/api/video/download', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({url, format}),
+                    body: JSON.stringify({ url, format }),
                 });
 
                 if (response.ok) {
@@ -231,7 +231,7 @@
         }
     }
 
-    async function handleSearchBtnClick () {
+    async function handleSearchBtnClick() {
         const url = urlInput.value.trim();
         let withError = false;
 
@@ -253,7 +253,7 @@
         videoInfo.innerHTML = ``;
 
         try {
-            const response = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
+            const response = await fetch(`/api/video/info?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
             if (response.status >= 400) {
