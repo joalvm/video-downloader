@@ -18,48 +18,55 @@ import { Express, Response, NextFunction, Request } from 'express';
  */
 function securityMiddleware(app: Express): void {
     app.use((_, res: Response, next: NextFunction) => {
-        res.locals.nonce = randomBytes(16).toString("base64");
+        res.locals.nonce = randomBytes(16).toString('base64');
 
         next();
-    }).use(helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: [
-                    "'self'",
-                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
-                    "https://cdn.tailwindcss.com",
-                    "https://unpkg.com/lucide@latest",
-                ],
-                scriptSrcElem: [
-                    "'self'",
-                    (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
-                    "https://cdn.tailwindcss.com",
-                    "https://unpkg.com/lucide@latest",
-                ],
-                styleSrc: [
-                    "'self'",
-                    "'unsafe-inline'", // Necesario para Tailwind
-                    "https://cdn.tailwindcss.com",
-                ],
-                imgSrc: ["'self'", "data:", "https://unpkg.com/lucide@latest"],
-                fontSrc: ["'self'", "data:"],
-                objectSrc: ["'none'"],
-                upgradeInsecureRequests: process.env.NODE_ENV === "production" ? [] : null,
-            },
-        },
-    })).use(cors({
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        credentials: true,
-    })).use(
-        rateLimit({
-            windowMs: 1 * 60 * 1000,
-            max: 100,
-            validate: { trustProxy: true },
-            keyGenerator: (req: Request): string => req.ip || '',
-        })
-    );
+    })
+        .use(
+            helmet({
+                contentSecurityPolicy: {
+                    directives: {
+                        defaultSrc: ["'self'"],
+                        scriptSrc: [
+                            "'self'",
+                            (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
+                            'https://cdn.tailwindcss.com',
+                            'https://unpkg.com/lucide@latest',
+                        ],
+                        scriptSrcElem: [
+                            "'self'",
+                            (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,
+                            'https://cdn.tailwindcss.com',
+                            'https://unpkg.com/lucide@latest',
+                        ],
+                        styleSrc: [
+                            "'self'",
+                            "'unsafe-inline'", // Necesario para Tailwind
+                            'https://cdn.tailwindcss.com',
+                        ],
+                        imgSrc: ["'self'", 'data:', 'https://unpkg.com/lucide@latest'],
+                        fontSrc: ["'self'", 'data:'],
+                        objectSrc: ["'none'"],
+                        upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+                    },
+                },
+            }),
+        )
+        .use(
+            cors({
+                origin: '*',
+                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                credentials: true,
+            }),
+        )
+        .use(
+            rateLimit({
+                windowMs: 1 * 60 * 1000,
+                max: 100,
+                validate: { trustProxy: true },
+                keyGenerator: (req: Request): string => req.ip || '',
+            }),
+        );
 }
 
 export default securityMiddleware;

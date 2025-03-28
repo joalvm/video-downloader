@@ -12,9 +12,7 @@ import { Express } from 'express';
  */
 function performanceMiddleware(app: Express): void {
     app.use(compression());
-    app.use(morgan(
-        process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
-    ));
+    app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
 export default performanceMiddleware;

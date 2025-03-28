@@ -1,4 +1,4 @@
-import createHttpError, {HttpError} from "http-errors";
+import createHttpError, { HttpError } from 'http-errors';
 import { Express, Request, Response, NextFunction } from 'express';
 
 /**
@@ -14,9 +14,10 @@ function errorHandlerMiddleware(app: Express) {
     });
 
     // Manejo general de errores
-    app.use((err: HttpError, _: Request, res: Response, __: NextFunction) => {
+    app.use((err: HttpError, _: Request, res: Response, next: NextFunction) => {
         console.log(err);
         res.status(err.status || 500).json({ message: err.message });
+        next();
     });
 }
 

@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 import http from 'node:http';
-import https from 'node:https';
-import fs from 'node:fs';
 import { tmpdir } from 'node:os';
-import { AddressInfo } from 'node:net';
 
 import winston from 'winston';
 
@@ -24,28 +21,19 @@ app.set('port', port);
 // Logger
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.combine(
-        winston.format.splat(),
-        winston.format.simple(),
-    ),
+    format: winston.format.combine(winston.format.splat(), winston.format.simple()),
     transports: [
         new winston.transports.Console({ level: 'info' }),
         new winston.transports.File({
-            level: 'error', filename: 'combined.log',
-            dirname: tmpdir() + '/logs'
+            level: 'error',
+            filename: 'combined.log',
+            dirname: tmpdir() + '/logs',
         }),
     ],
 });
 
-
 // Crear servidor HTTP/HTTPS
-const server = process.env.NODE_ENV === 'production'
-    ? https.createServer({
-        key: fs.readFileSync('/path/to/key.pem'),
-        cert: fs.readFileSync('/path/to/cert.pem'),
-    }, app)
-    : http.createServer(app);
-
+const server = http.createServer(app);
 
 // Escuchar en el puerto
 server.listen(port);
@@ -78,7 +66,7 @@ server.on('error', function (error: ErrnoException) {
 });
 
 server.on('listening', function () {
-    const addr = server.address() as AddressInfo;
+    const addr = server.address();
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
     logger.info(`Listening on ${bind}`);

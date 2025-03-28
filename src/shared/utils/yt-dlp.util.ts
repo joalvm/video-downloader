@@ -1,9 +1,9 @@
-import { execFile } from "node:child_process";
+import { execFile } from 'node:child_process';
 
 import EmptyInfoResponseError from '@/errors/empty-info-response.error';
 import InvalidParseInfoError from '@/errors/invalid-parse-info.error';
 
-type VideoFormat = 'video' | 'audio' | 'video_audio';
+export type VideoFormat = 'video' | 'audio' | 'video_audio';
 
 interface VideoInfo {
     id: string;
@@ -32,25 +32,32 @@ async function download(url: string, outputDir: string, format: VideoFormat = 'v
             video: 'bestvideo/best',
             audio: 'bestaudio/best',
             video_audio: 'bestvideo*+bestaudio/best',
-        }
+        };
 
         const command = [
             '--no-check-certificates',
-            '--age-limit', '99',
-            '-f', formats[format],
-            '-P', outputDir,
+            '--age-limit',
+            '99',
+            '-f',
+            formats[format],
+            '-P',
+            outputDir,
             '--restrict-filenames',
-            '-o', '%(title|lower).40s__%(uploader|lower).15s__%(id)s.%(ext)s',
+            '-o',
+            '%(title|lower).40s__%(uploader|lower).15s__%(id)s.%(ext)s',
             '--add-metadata',
-            '--print', 'after_move:filepath'
+            '--print',
+            'after_move:filepath',
         ];
 
         // Opciones específicas para audio
         if (format === 'audio') {
             command.push(
                 '--extract-audio',
-                '--audio-format', 'mp3',
-                '--audio-quality', '0' // Máxima calidad
+                '--audio-format',
+                'mp3',
+                '--audio-quality',
+                '0', // Máxima calidad
             );
         }
 
@@ -62,7 +69,7 @@ async function download(url: string, outputDir: string, format: VideoFormat = 'v
 
         execFile('yt-dlp', command, { encoding: 'utf-8' }, (error, stdout) => {
             if (error) {
-                reject(error);
+                reject(new Error(error.message));
 
                 return;
             }
@@ -93,19 +100,21 @@ async function info(url: string): Promise<VideoInfo[]> {
 
         const command = [
             '--no-check-certificates',
-            '--age-limit', '99',
+            '--age-limit',
+            '99',
             '--ignore-errors',
-            '--print', `{${printOtions}}`,
+            '--print',
+            `{${printOtions}}`,
             '--yes-playlist',
             '--skip-download',
-            '--no-playlist-reverse'
+            '--no-playlist-reverse',
         ];
 
         command.push(url);
 
         execFile('yt-dlp', command, (error, stdout) => {
             if (error) {
-                reject(error);
+                reject(new Error(error.message));
 
                 return;
             }

@@ -5,7 +5,9 @@ import { Request, Response } from 'express';
 
 import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
 
-type ProxyRequest = Request<{}, {}, {}, { url: string }>;
+interface ProxyRequest extends Request {
+    query: { url: string };
+}
 
 class ProxyController {
     /**
@@ -18,7 +20,7 @@ class ProxyController {
             throw new InvalidOrMissingUrlError();
         }
 
-        const response = await fetch(url as string);
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -31,6 +33,5 @@ class ProxyController {
         Readable.fromWeb(response.body as unknown as NodeReadableStream).pipe(res);
     }
 }
-
 
 export default new ProxyController();

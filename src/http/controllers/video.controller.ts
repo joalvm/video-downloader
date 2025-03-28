@@ -3,25 +3,33 @@ import { tmpdir } from 'node:os';
 
 import { Request, Response } from 'express';
 
-import InvalidOrMissingUrlError from "@/errors/invalid-or-missing-url.error";
-import { info, download } from '@/shared/utils/yt-dlp.util';
+import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
+import { info, download, VideoFormat } from '@/shared/utils/yt-dlp.util';
 
-class YtdlpController {
+interface InfoRequest extends Request {
+    query: { url: string };
+}
+
+interface downloadRequest extends Request {
+    body: { url: string; format: VideoFormat };
+}
+
+class VideoController {
     /**
      *
      * Handler to get video info from a provided URL.
      */
-    async info(req: Request, res: Response) {
+    async info(req: InfoRequest, res: Response) {
         const { url } = req.query;
 
         if (!url) {
             throw new InvalidOrMissingUrlError();
         }
 
-        res.json(await info(url as string));
+        res.json(await info(url));
     }
 
-    async download(req: Request, res: Response) {
+    async download(req: downloadRequest, res: Response) {
         const { url } = req.body;
         let { format } = req.body;
 
@@ -47,4 +55,4 @@ class YtdlpController {
     }
 }
 
-export default new YtdlpController();
+export default new VideoController();

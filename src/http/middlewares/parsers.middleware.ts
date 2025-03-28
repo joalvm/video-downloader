@@ -1,4 +1,4 @@
-import {json, urlencoded, Express} from 'express';
+import { json, urlencoded, Express } from 'express';
 import cookieParser from 'cookie-parser';
 import methodOverride from 'method-override';
 import { express as useragentExpress } from 'express-useragent';

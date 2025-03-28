@@ -1,82 +1,40 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import importPlugin from "eslint-plugin-import";
-import promisePlugin from "eslint-plugin-promise";
-import securityPlugin from "eslint-plugin-security";
-import prettierPlugin from "eslint-plugin-prettier";
-import prettierConfig from "eslint-config-prettier";
-import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import typescriptParser from "@typescript-eslint/parser";
+// @ts-check
+import eslint from '@eslint/js';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+export default tseslint.config(
+    {
+        ignores: ['eslint.config.js'],
+    },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
+    eslintPluginPrettierRecommended,
     {
         languageOptions: {
             globals: {
                 ...globals.node,
-                ...globals.es2024
+                ...globals.jest,
             },
+            ecmaVersion: 5,
+            sourceType: 'module',
             parserOptions: {
-                sourceType: "module",
-                ecmaVersion: "latest"
-            }
-        }
-    },
-    pluginJs.configs.recommended,
-    importPlugin.flatConfigs.recommended,
-    promisePlugin.configs['flat/recommended'],
-    securityPlugin.configs.recommended,
-    prettierConfig,
-    {
-        plugins: {
-            prettier: prettierPlugin,
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
+    },
+    {
         rules: {
-            "no-console": "off",
-            "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-            "import/order": ["error", { "newlines-between": "always" }],
-            "import/namespace": "off",
-            "promise/no-return-wrap": "error",
-            "security/detect-object-injection": "off",
+            '@typescript-eslint/no-explicit-any': 'off',
+            // '@typescript-eslint/no-floating-promises': 'warn',
+            // '@typescript-eslint/no-unsafe-argument': 'warn',
+            '@typescript-eslint/no-unsafe-assignment': 'off'
+            // '@typescript-eslint/no-unsafe-call': 'warn',
+            // '@typescript-eslint/no-unsafe-member-access': 'warn',
+            // '@typescript-eslint/no-unsafe-return': 'warn',
+            // '@typescript-eslint/no-empty-object-type': 'off',
         },
     },
-    // TypeScript configuration
-    {
-        files: ["**/*.ts", "**/*.tsx"],
-        languageOptions: {
-            parser: typescriptParser,
-            parserOptions: {
-                project: "./tsconfig.json",
-                ecmaVersion: "latest",
-                sourceType: "module",
-            }
-        },
-        plugins: {
-            "@typescript-eslint": typescriptPlugin
-        },
-        rules: {
-            ...typescriptPlugin.configs.recommended.rules,
-            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-            "@typescript-eslint/no-explicit-any": "warn",
-            "@typescript-eslint/explicit-function-return-type": "off",
-            "@typescript-eslint/explicit-module-boundary-types": "off",
-            "@typescript-eslint/no-empty-object-type": "off",
-            // Deshabilitar reglas JS que TypeScript ya maneja
-            "no-unused-vars": "off",
-            // Deshabilitar errores de importación no resuelta para alias
-            "import/no-unresolved": "off"
-        },
-        settings: {
-            // Configuración para resolver importaciones
-            "import/resolver": {
-                typescript: {
-                    alwaysTryTypes: true,
-                    project: "./tsconfig.json"
-                }
-            }
-        }
-    },
-    {
-        ignores: ["node_modules/", "eslint.config.js", "public/static/js/*.js", "build/"],
-    }
-];
+);

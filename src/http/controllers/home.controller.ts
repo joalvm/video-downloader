@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 class HomeController {
-    index(req: Request, res: Response) {
+    index(_: Request, res: Response) {
         res.render('index', { nonce: res.locals.nonce });
     }
 }
