@@ -17,12 +17,6 @@ declare global {
             nonce: string;
         }
     }
-
-    // Aquí puedes añadir tus propias interfaces globales o extender interfaces existentes
-    // Por ejemplo:
-    // interface Window {
-    //   customProperty: string;
-    // }
 }
 
 // Este export vacío es necesario para que TypeScript trate este archivo como un módulo

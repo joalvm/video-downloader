@@ -1,15 +1,14 @@
 import { Router } from 'express';
 
-import ProxyController from '@/http/controllers/proxy.controller';
-import VideoController from '@/http/controllers/video.controller';
+import ProxyController, { ProxyRequest } from '@/http/controllers/proxy.controller';
+import VideoController, { downloadRequest, InfoRequest } from '@/http/controllers/video.controller';
 
 const routes = Router();
 
-// Ruta para obtener miniaturas de videos
-routes.get('/proxy', ProxyController.index.bind(ProxyController));
+routes.get('/proxy', (req: ProxyRequest, res) => ProxyController.index(req, res));
 // Muestra información del video
-routes.get('/video/info', VideoController.info.bind(VideoController));
+routes.get('/video/info', (req: InfoRequest, res) => VideoController.info(req, res));
 // Ruta para descargar un video
-routes.post('/video/download', VideoController.download.bind(VideoController));
+routes.post('/video/download', (req: downloadRequest, res) => VideoController.download(req, res));
 
 export default routes;

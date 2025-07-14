@@ -6,11 +6,11 @@ import { Request, Response } from 'express';
 import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
 import { info, download, VideoFormat } from '@/shared/utils/yt-dlp.util';
 
-interface InfoRequest extends Request {
+export interface InfoRequest extends Request {
     query: { url: string };
 }
 
-interface downloadRequest extends Request {
+export interface downloadRequest extends Request {
     body: { url: string; format: VideoFormat };
 }
 
@@ -42,7 +42,7 @@ class VideoController {
         }
 
         if (!['video', 'audio', 'video_audio'].includes(format)) {
-            throw new Error('Invalid format');
+            throw new Error('Invalid format de requested');
         }
 
         const filepath = await download(url, join(tmpdir(), 'downloads'), format);

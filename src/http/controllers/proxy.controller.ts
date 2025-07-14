@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 
 import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
 
-interface ProxyRequest extends Request {
+export interface ProxyRequest extends Request {
     query: { url: string };
 }
 
