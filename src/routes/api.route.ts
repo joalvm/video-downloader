@@ -5,6 +5,7 @@ import VideoController, { downloadRequest, InfoRequest } from '@/http/controller
 
 const routes = Router();
 
+// Ruta para manejar los thumbails.
 routes.get('/proxy', (req: ProxyRequest, res) => ProxyController.index(req, res));
 // Muestra información del video
 routes.get('/video/info', (req: InfoRequest, res) => VideoController.info(req, res));

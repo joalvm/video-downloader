@@ -6,13 +6,9 @@ import { Request, Response } from 'express';
 import InvalidOrMissingUrlError from '@/errors/invalid-or-missing-url.error';
 import { info, download, VideoFormat } from '@/shared/utils/yt-dlp.util';
 
-export interface InfoRequest extends Request {
-    query: { url: string };
-}
+export type InfoRequest = Request<null, null, null, { url: string }>;
 
-export interface downloadRequest extends Request {
-    body: { url: string; format: VideoFormat };
-}
+export type downloadRequest = Request<null, null, { url: string; format?: VideoFormat }>;
 
 class VideoController {
     /**
