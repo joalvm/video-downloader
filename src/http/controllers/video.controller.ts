@@ -8,7 +8,7 @@ import { info, download, VideoFormat } from '@/shared/utils/yt-dlp.util';
 
 export type InfoRequest = Request<null, null, null, { url: string }>;
 
-export type downloadRequest = Request<null, null, { url: string; format?: VideoFormat }>;
+export type DownloadRequest = Request<null, null, { url: string; format?: VideoFormat }>;
 
 class VideoController {
     /**
@@ -25,7 +25,7 @@ class VideoController {
         res.json(await info(url));
     }
 
-    async download(req: downloadRequest, res: Response) {
+    async download(req: DownloadRequest, res: Response) {
         const { url } = req.body;
         let { format } = req.body;
 
