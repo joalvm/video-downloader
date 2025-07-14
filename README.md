@@ -12,16 +12,18 @@ para esto tenemos que copiar el archivo `.env.example` y renombrarlo a `.env` lu
 npm install
 ```
 
-### Construir la imagen docker
+## Uso con Docker Compose
+
+### Construir y levantar los contenedores
 
 ```shell
-docker build -t video-downloader .
+docker compose up --build -d
 ```
 
-### Iniciar el contenedor
+Esto construirá la imagen de la aplicación y levantará los servicios definidos en `docker-compose.yml` (app y nginx).
+
+### Parar los contenedores
 
 ```shell
-docker run -it --rm -p 83:80 -v .:/app video-downloader
+docker compose down
 ```
-
-Ahora puedes probarlo usando la ruta `localhost:83`

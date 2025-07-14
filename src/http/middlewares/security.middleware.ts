@@ -54,7 +54,7 @@ function securityMiddleware(app: Express): void {
         )
         .use(
             cors({
-                origin: '*',
+                origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['*'],
                 methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
                 credentials: true,
             }),
