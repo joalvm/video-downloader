@@ -27,6 +27,7 @@ function securityMiddleware(app: Express): void {
                 contentSecurityPolicy: {
                     directives: {
                         defaultSrc: ["'self'"],
+                        connectSrc: ["'self'", 'https://unpkg.com'],
                         scriptSrc: [
                             "'self'",
                             (_, res: ServerResponse) => `'nonce-${(res as Response).locals.nonce}'`,

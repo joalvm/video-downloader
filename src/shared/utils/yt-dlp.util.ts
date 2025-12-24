@@ -48,6 +48,8 @@ async function download(url: string, outputDir: string, format: VideoFormat = 'v
             '--add-metadata',
             '--print',
             'after_move:filepath',
+            '--impersonate',
+            'Chrome-136',
         ];
 
         // Opciones específicas para audio
@@ -108,6 +110,8 @@ async function info(url: string): Promise<VideoInfo[]> {
             '--yes-playlist',
             '--skip-download',
             '--no-playlist-reverse',
+            '--impersonate',
+            'Chrome-136',
         ];
 
         command.push(url);
